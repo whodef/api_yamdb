@@ -1,6 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+
 class Review(models.Model):
     title = models.ForeignKey(
         Title,
