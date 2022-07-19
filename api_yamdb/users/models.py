@@ -15,14 +15,20 @@ class User(AbstractUser):
 
     REQUIRED_FIELDS = ['email']
 
-    name = models.CharField(
-        gtl('name'), max_length=150, blank=True,
+    first_name = models.CharField(
+        gtl('first_name'), max_length=150,
+    )
+    last_name = models.CharField(
+        gtl('last_name'), max_length=150, blank=True,
     )
     email = models.EmailField(
-        gtl('email address'), max_length=254, blank=True, unique=True,
+        gtl('email_address'), max_length=254, unique=True,
+    )
+    password = models.CharField(
+        'Пароль', max_length=128, blank=False, null=True,
     )
     bio = models.TextField(
-        'Биография', blank=True,
+        'Биография', blank=True, null=True
     )
     role = models.CharField(
         'Роль', max_length=42, choices=CHOICES, default=CHOICES[0][0],
