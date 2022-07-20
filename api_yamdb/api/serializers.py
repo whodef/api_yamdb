@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 from rest_framework.exceptions import ValidationError
 
+from categories.models import Category, Genre, Title
 from reviews.models import Comment, Review
 
 
@@ -44,4 +45,35 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
+        fields = '__all__'
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('name', 'slug')
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ('name', 'slug')
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Genre.objects.all(),
+        many=True,
+        required=True,
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Category.objects.all(),
+        required=True,
+    )
+    rating = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = Title
         fields = '__all__'
