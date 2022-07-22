@@ -6,6 +6,8 @@ from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.models import User
+from categories.models import Category, Genre, Title
+from reviews.models import Comment, Review
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -127,11 +129,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'first_name',
                   'last_name', 'bio', 'role', )
         read_only_fields = ('role', 'username', 'email', )
-from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-
-from categories.models import Category, Genre, Title
-from reviews.models import Comment, Review
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -144,7 +141,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username',
         read_only=True,
     )
-
 
     class Meta:
         model = Review

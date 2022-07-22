@@ -2,11 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as gtl
 
+from api_yamdb.settings import ADMIN, MODERATOR, USER
 
 CHOICES = [
-        ('USER', 'пользователь'),
-        ('MODERATOR', 'модератор'),
-        ('ADMIN', 'Администратор'),
+    (ADMIN, 'Администратор'),
+    (MODERATOR, 'Модератор'),
+    (USER, 'Пользователь'),
 ]
 
 
@@ -50,3 +51,11 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ('username', )
+
+    @property
+    def is_moderator(self):
+        return self.role == MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == ADMIN or self.is_staff
