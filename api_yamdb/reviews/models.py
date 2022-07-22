@@ -1,5 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from categories.models import Title 
 
 
 class Review(models.Model):
