@@ -38,3 +38,13 @@ class IsAdminModeratorOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS
                 or request.user.is_authenticated)
+
+
+class IsAdminSuperuserOrReadOnly(permissions.BasePermission):
+    '''Определяет права на получение данных для всех и права на изменения 
+    только для Суперпользователя или Админа'''
+
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS or (
+            request.user.is_superuser or request.user.is_admin
+        )
