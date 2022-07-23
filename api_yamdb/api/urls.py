@@ -4,16 +4,19 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import AdminViewSet, RegisterView, UserView, get_token
 from reviews.views import ReviewViewSet, CommentViewSet
+from categories.views import CategoryViewSet, GenreViewSet, TitleViewSet
 
 
 router = SimpleRouter()  # Замена на SimpleRouter
 router.register('users', AdminViewSet)
 
+router.register(r'titles', TitleViewSet, basename='titles')
 router.register(r'titles/(?P<title_id>\d+)/reviews',
                 ReviewViewSet, basename='reviews')
 router.register(r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)'
                 r'/comments', CommentViewSet, basename='comments')
-
+router.register(r'genres', GenreViewSet, basename='genres')
+router.register(r'categories', CategoryViewSet, basename='categories')
 
 urlpatterns = [
     path('v1/auth/token/', get_token, name='get_token'),

@@ -1,7 +1,5 @@
 from django.db import models
 
-from reviews.models import Review
-
 
 class Genre(models.Model):
     name = models.CharField(max_length=256, verbose_name='Название жанра')
@@ -38,13 +36,8 @@ class Title(models.Model):
         max_length=48, verbose_name='Название произведения'
     )
     year = models.IntegerField(verbose_name='Год')
-    description = models.TextField(verbose_name='Описание')
-    rating = models.ForeignKey(
-        Review,
-        on_delete=models.SET_NULL,
-        related_name='title',
-        verbose_name='Отзыв о произведении',
-        null=True,
+    description = models.TextField(
+        verbose_name='Описание', blank=True, null=True
     )
     genre = models.ManyToManyField(
         Genre, through='TitleGenre', verbose_name='Жанр произведения'
