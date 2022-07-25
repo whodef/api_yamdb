@@ -38,20 +38,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         confirmation_message = (
             "Здравствуйте! Спасибо за регистрацию в проекте YaMDb. ",
             f"Ваш код подтверждения: {confirmation_code}. ",
-            "Он вам понадобится для получения токена для работы с Api YaMDb.",
-            "Токен можно получить по ссылке: ",
-            "http://127.0.0.1:8000/api/v1/auth/token/",
+            "Он понадобится для получения токена для работы с Api YaMDb.",
         )
         email = validated_data["email"]
         username = validated_data["username"]
 
-        # send_mail(
-        # 'Subject here',
-        # 'Here is the message.',
-        # 'from@example.com',
-        # ['to@example.com'],
-        # fail_silently=False
-        # )
         send_mail(
             "Код подтверждения регистрации",
             f"{confirmation_message}",
