@@ -22,6 +22,7 @@ class User(AbstractUser):
     role = models.CharField(
         "Роль", max_length=42, choices=CHOICES, default=CHOICES[0][0]
     )
+    confirmation_code = models.CharField(max_length=32, blank=True)
 
     @property
     def is_moderator(self):
@@ -35,12 +36,4 @@ class User(AbstractUser):
         return self.username
 
     class Meta:
-        ordering = ("id",)
-
-
-class ConfirmationCode(models.Model):
-    """Модель кода подтверждения."""
-
-    confirmation_code = models.CharField(max_length=32)
-    email = models.EmailField(max_length=254, unique=True)
-    code_date = models.DateTimeField(auto_now_add=True)
+        ordering = ("username",)

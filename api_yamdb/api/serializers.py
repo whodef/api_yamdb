@@ -18,44 +18,49 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username',)
+        fields = (
+            "email",
+            "username",
+        )
         validators = [
             UniqueTogetherValidator(
-                queryset=User.objects.all(),
-                fields=('username', 'email')
+                queryset=User.objects.all(), fields=("username", "email")
             )
         ]
 
     def validate_username(self, value):
-        if value == 'me':
-            raise serializers.ValidationError(
-                'Недопустимое имя пользователя'
-            )
+        if value == "me":
+            raise serializers.ValidationError("Недопустимое имя пользователя")
         return value
 
     def create(self, validated_data):
         confirmation_code = str(uuid.uuid4())
         confirmation_message = (
-            'Здравствуйте! Спасибо за регистрацию в проекте YaMDb. ',
-            f'Ваш код подтверждения: {confirmation_code}. ',
-            'Он вам понадобится для получения токена для работы с Api YaMDb.',
-            'Токен можно получить по ссылке: ',
-            'http://127.0.0.1:8000/api/v1/auth/token/'
+            "Здравствуйте! Спасибо за регистрацию в проекте YaMDb. ",
+            f"Ваш код подтверждения: {confirmation_code}. ",
+            "Он вам понадобится для получения токена для работы с Api YaMDb.",
+            "Токен можно получить по ссылке: ",
+            "http://127.0.0.1:8000/api/v1/auth/token/",
         )
-        email = validated_data['email']
-        username = validated_data['username']
+        email = validated_data["email"]
+        username = validated_data["username"]
 
+        # send_mail(
+        # 'Subject here',
+        # 'Here is the message.',
+        # 'from@example.com',
+        # ['to@example.com'],
+        # fail_silently=False
+        # )
         send_mail(
-            'Код подтверждения регистрации',
-            f'{confirmation_message}',
-            'from@example.com',
+            "Код подтверждения регистрации",
+            f"{confirmation_message}",
+            "from@example.com",
             [email],
         )
 
         user = User.objects.create(
-            username=username,
-            email=email,
-            confirmation_code=confirmation_code
+            username=username, email=email, confirmation_code=confirmation_code
         )
         return user
 
@@ -74,16 +79,19 @@ class GetTokenSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'confirmation_code', 'token')
+        fields = ("id", "username", "confirmation_code", "token")
 
     def validate(self, data):
         existing = User.objects.filter(
-            username=data['username'],
+            username=data["username"],
         ).exists()
+
         if not existing:
             raise exceptions.NotFound("Пользователь не найден")
-        user = User.objects.get(username=data['username'])
-        if user.confirmation_code != data['confirmation_code']:
+
+        user = User.objects.get(username=data["username"])
+
+        if not user.confirmation_code == data["confirmation_code"]:
             raise exceptions.ParseError("Код подтверждения не верный")
         return data
 
@@ -91,9 +99,7 @@ class GetTokenSerializer(serializers.ModelSerializer):
         username = list(obj.items())[0][1]
         confirmation_code = list(obj.items())[1][1]
         user = User.objects.get(
-            username=username,
-            confirmation_code=confirmation_code
-        )
+            username=username, confirmation_code=confirmation_code)
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
 
@@ -111,100 +117,129 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'bio', 'role', )
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "bio",
+            "role",
+        )
         validators = [
             UniqueTogetherValidator(
-                queryset=User.objects.all(),
-                fields=['username', 'email']
+                queryset=User.objects.all(), fields=["username", "email"]
             )
         ]
         filter_backends = (filters.SearchFilter,)
-        search_fields = ('username', )
+        search_fields = ("username",)
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'bio', 'role', )
-        read_only_fields = ('role', 'username', 'email', )
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "bio",
+            "role",
+        )
+        read_only_fields = (
+            "role",
+            "username",
+            "email",
+        )
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     title = serializers.SlugRelatedField(
-        slug_field='name',
+        slug_field="name",
         read_only=True,
     )
     author = serializers.SlugRelatedField(
         default=serializers.CurrentUserDefault(),
-        slug_field='username',
+        slug_field="username",
         read_only=True,
     )
 
     class Meta:
         model = Review
-        fields = ('id', 'text', 'author', 'rating', 'pub_date',)
+        fields = (
+            "id",
+            "text",
+            "author",
+            "rating",
+            "pub_date",
+        )
         validators = (
             UniqueTogetherValidator(
-                queryset=Review.objects.all(), fields=('author', 'title'),
+                queryset=Review.objects.all(),
+                fields=("author", "title"),
             ),
         )
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    review = serializers.SlugRelatedField(slug_field='text', read_only=True)
+    review = serializers.SlugRelatedField(
+        slug_field="text", read_only=True
+    )
     author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True
+        slug_field="username", read_only=True
     )
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'author', 'pub_date',)
+        fields = (
+            "id",
+            "text",
+            "author",
+            "pub_date",
+        )
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('name', 'slug')
+        fields = ("name", "slug")
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = ('name', 'slug')
+        fields = ("name", "slug")
 
 
 class TitleSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(
-        slug_field='slug',
+        slug_field="slug",
         queryset=Genre.objects.all(),
         many=True,
         required=True,
     )
     category = serializers.SlugRelatedField(
-        slug_field='slug', queryset=Category.objects.all(), required=True
+        slug_field="slug", queryset=Category.objects.all(), required=True
     )
     rating = serializers.IntegerField(required=False)
 
     class Meta:
         model = Title
-        fields = fields = (
-            'name',
-            'year',
-            'description',
-            'genre',
-            'category',
-            'rating',
+        fields = (
+            "name",
+            "year",
+            "description",
+            "genre",
+            "category",
+            "rating",
         )
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        for genre_data in data['genre']:
-            data['genre'] = GenreSerializer(
+        for genre_data in data["genre"]:
+            data["genre"] = GenreSerializer(
                 Genre.objects.get(slug=genre_data)
             ).data
-        data['category'] = CategorySerializer(
-            Category.objects.get(slug=data['category'])
+        data["category"] = CategorySerializer(
+            Category.objects.get(slug=data["category"])
         ).data
         return data

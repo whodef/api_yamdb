@@ -2,8 +2,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 
 from api.serializers import ReviewSerializer, CommentSerializer
-from api.permisions import IsAdminModeratorOrReadOnly
-from reviews.models import Title, Review
+from api.permissions import IsAdminModeratorOrReadOnly
+from reviews.models import Review
 from categories.models import Title
 
 
