@@ -1,8 +1,8 @@
 from django.db.models import Avg
-from rest_framework import filters, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
-from api.permissions import IsAdminSuperuserOrReadOnly
+from rest_framework import filters, viewsets
 
+from api.permissions import IsAdminSuperuserOrReadOnly
 from categories.models import Category, Genre, Title
 from api.filters import TitleFilter
 from api.serializers import (

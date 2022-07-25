@@ -76,12 +76,14 @@ class AdminViewSet(viewsets.ModelViewSet):
 
 
 class UserView(APIView):
-    def get(self, request):
+    @staticmethod
+    def get(request):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request):
+    @staticmethod
+    def patch(request):
         user = request.user
         serializer = UserSerializer(user, data=request.data)
 
