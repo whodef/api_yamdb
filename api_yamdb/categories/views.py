@@ -17,7 +17,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = (IsAdminSuperuserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ("name",)
+    search_fields = ('name',)
 
     def perform_create(self, serializer):
         serializer.save()
@@ -28,7 +28,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = GenreSerializer
     permission_classes = (IsAdminSuperuserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ("name",)
+    search_fields = ('name',)
 
     def perform_create(self, serializer):
         serializer.save()
@@ -39,11 +39,11 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminSuperuserOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_class = TitleFilter
-    search_fields = ("name",)
+    search_fields = ('name',)
 
     def perform_create(self, serializer):
         serializer.save()
 
     def get_queryset(self):
         return Title.objects.annotate(
-            rating=Avg("reviews__rating")).order_by("name")
+            rating=Avg('reviews__rating')).order_by('name')
