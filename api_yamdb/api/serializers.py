@@ -2,7 +2,7 @@ import uuid
 
 from django.core.mail import send_mail
 from pkg_resources import require
-from rest_framework import exceptions, filters, serializers
+from rest_framework import exceptions, filters, request, serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -148,18 +148,28 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
+class FromContext(object):
+    requires_context = True
+
+    def __init__(self, value_fn):
+        self.value_fn = value_fn
+
+    def __call__(self, serializer_field):
+        self.value = self.value_fn(serializer_field.context)
+        return self.value
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         default=serializers.CurrentUserDefault(),
         slug_field='username',
         read_only=True,
     )
-    title = serializers.SerializerMethodField()
-    
-    def get_title(self, obj):
-        # print(dir(self.context['view'].kwargs))
-        # print(self.context['view'].kwargs['title_id'])
-        return self.context['view'].kwargs['title_id']
+    title = serializers.SlugRelatedField(
+        slug_field='name',
+        read_only=True,
+        default=FromContext(lambda context: context.get('view').kwargs['title_id'])
+    )
 
     class Meta:
         model = Review
@@ -167,11 +177,10 @@ class ReviewSerializer(serializers.ModelSerializer):
             'id',
             'text',
             'author',
-            'rating',
+            'score',
             'pub_date',
             'title'
         )
-        # read_only_fields = ('title',)
         validators = (
             UniqueTogetherValidator(
                 queryset=Review.objects.all(),
@@ -179,15 +188,13 @@ class ReviewSerializer(serializers.ModelSerializer):
             ),
         )
 
-    # def create(self, validated_data):
-        # print(dir(self.context['request']))
-        # print(self.context['request'].data['title'])
-        # validated_data['title'] = self.context['request'].data['title']
-        # return super().create(validated_data)
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.pop('title')
+        return data
     
 
 class CommentSerializer(serializers.ModelSerializer):
-    review = serializers.SlugRelatedField(slug_field='text', read_only=True)
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True
     )
@@ -198,7 +205,7 @@ class CommentSerializer(serializers.ModelSerializer):
             'id',
             'text',
             'author',
-            'pub_date',
+            'pub_date'
         )
 
 

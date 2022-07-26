@@ -21,7 +21,7 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name="reviews",
     )
-    rating = models.PositiveSmallIntegerField(
+    score = models.PositiveSmallIntegerField(
         verbose_name="Рейтинг",
         validators=[
             MinValueValidator(1, "Допустимое значение от 1 до 10"),
