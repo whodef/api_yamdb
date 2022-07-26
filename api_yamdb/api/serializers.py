@@ -1,6 +1,7 @@
 import uuid
 
 from django.core.mail import send_mail
+from pkg_resources import require
 from rest_framework import exceptions, filters, serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -13,7 +14,7 @@ from reviews.models import Comment, Review
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        validators=[UniqueValidator(queryset=User.objects.all())],
     )
 
     class Meta:
@@ -92,7 +93,8 @@ class GetTokenSerializer(serializers.ModelSerializer):
         username = list(obj.items())[0][1]
         confirmation_code = list(obj.items())[1][1]
         user = User.objects.get(
-            username=username, confirmation_code=confirmation_code)
+            username=username, confirmation_code=confirmation_code
+        )
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
 
@@ -106,7 +108,7 @@ class GetTokenSerializer(serializers.ModelSerializer):
 class AdminUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        validators=[UniqueValidator(queryset=User.objects.all())],
     )
 
     class Meta:
@@ -152,6 +154,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username',
         read_only=True,
     )
+    title = serializers.SerializerMethodField()
+    
+    def get_title(self, obj):
+        # print(dir(self.context['view'].kwargs))
+        # print(self.context['view'].kwargs['title_id'])
+        return self.context['view'].kwargs['title_id']
 
     class Meta:
         model = Review
@@ -161,7 +169,9 @@ class ReviewSerializer(serializers.ModelSerializer):
             'author',
             'rating',
             'pub_date',
+            'title'
         )
+        # read_only_fields = ('title',)
         validators = (
             UniqueTogetherValidator(
                 queryset=Review.objects.all(),
@@ -169,11 +179,15 @@ class ReviewSerializer(serializers.ModelSerializer):
             ),
         )
 
+    # def create(self, validated_data):
+        # print(dir(self.context['request']))
+        # print(self.context['request'].data['title'])
+        # validated_data['title'] = self.context['request'].data['title']
+        # return super().create(validated_data)
+    
 
 class CommentSerializer(serializers.ModelSerializer):
-    review = serializers.SlugRelatedField(
-        slug_field='text', read_only=True
-    )
+    review = serializers.SlugRelatedField(slug_field='text', read_only=True)
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True
     )
@@ -192,12 +206,14 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('name', 'slug')
+        lookup_field = 'slug'
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = ('name', 'slug')
+        lookup_field = 'slug'
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -215,6 +231,7 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = (
+            'id',
             'name',
             'year',
             'description',
@@ -225,10 +242,11 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        genre_list = []
         for genre_data in data['genre']:
-            data['genre'] = GenreSerializer(
-                Genre.objects.get(slug=genre_data)
-            ).data
+            genre = GenreSerializer(Genre.objects.get(slug=genre_data)).data
+            genre_list.append(genre)
+        data['genre'] = genre_list
         data['category'] = CategorySerializer(
             Category.objects.get(slug=data['category'])
         ).data
