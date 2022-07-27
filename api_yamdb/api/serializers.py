@@ -1,7 +1,6 @@
 import uuid
 
 from django.core.mail import send_mail
-from pkg_resources import require
 from rest_framework import exceptions, filters, request, serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from rest_framework_simplejwt.tokens import RefreshToken
