@@ -14,4 +14,6 @@ class Command(BaseCommand):
                 user = User(username=username)
                 user.set_password(password)
 
-            User.objects.create_user(username=username, email='', password='123')
+            User.objects.create_user(
+                username=username, email='', password='123'
+            )
