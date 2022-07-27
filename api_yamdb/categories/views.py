@@ -1,7 +1,6 @@
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import exceptions, filters, status, viewsets
-from rest_framework.response import Response
+from rest_framework import exceptions, filters, viewsets
 
 from api.permissions import IsAdminSuperuserOrReadOnly
 from categories.models import Category, Genre, Title
@@ -20,7 +19,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminSuperuserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-    
+
     def exist_validation(self, request):
         instance = Category.objects.filter(slug=self.kwargs.get('slug'))
         if not instance.exists():
@@ -31,7 +30,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         self.exist_validation(request)
-        return super().retrieve(request,*args,**kwargs)
+        return super().retrieve(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         self.exist_validation(request)
@@ -56,7 +55,7 @@ class GenreViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         self.exist_validation(request)
-        return super().retrieve(request,*args,**kwargs)
+        return super().retrieve(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         self.exist_validation(request)

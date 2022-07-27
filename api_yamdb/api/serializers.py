@@ -1,7 +1,7 @@
 import uuid
 
 from django.core.mail import send_mail
-from rest_framework import exceptions, filters, request, serializers
+from rest_framework import exceptions, filters, serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -167,7 +167,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     title = serializers.SlugRelatedField(
         slug_field='name',
         read_only=True,
-        default=FromContext(lambda context: context.get('view').kwargs['title_id'])
+        default=FromContext(
+            lambda context: context.get('view').kwargs['title_id'])
     )
 
     class Meta:
@@ -191,7 +192,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data.pop('title')
         return data
-    
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
