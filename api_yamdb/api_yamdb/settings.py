@@ -150,3 +150,5 @@ USER = "user"
 # Django EmailBackend
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+SENDER = 'from@example.com'

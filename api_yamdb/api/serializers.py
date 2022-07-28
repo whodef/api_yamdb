@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import User
 from categories.models import Category, Genre, Title
 from reviews.models import Comment, Review
+from api_yamdb.settings import SENDER
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -47,7 +48,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         send_mail(
             'Код подтверждения регистрации',
             f'{confirmation_message}',
-            'from@example.com',
+            SENDER,
             [email],
         )
 

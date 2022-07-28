@@ -1,7 +1,8 @@
 from csv import reader
 
-from users.models import User
 from django.core.management.base import BaseCommand
+
+from users.models import User
 
 
 class Command(BaseCommand):
@@ -15,5 +16,5 @@ class Command(BaseCommand):
                 user.set_password(password)
 
             User.objects.create_user(
-                username=username, email='', password='123'
+                username=username, email='', password=password
             )
