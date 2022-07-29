@@ -16,7 +16,7 @@ from api.serializers import (
 )
 
 
-@api_view(["POST"])
+@api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def get_token(request):
     serializer = GetTokenSerializer(data=request.data)
@@ -25,7 +25,7 @@ def get_token(request):
         serializer = GetTokenSerializer(data=serializer.data)
 
     if serializer.is_valid():
-        data = {"token": serializer.data.get("token")}
+        data = {'token': serializer.data.get('token')}
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -46,21 +46,21 @@ class AdminViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
     @action(
-        methods=["get", "patch", "delete"],
-        url_path=r"(?P<username>\w+)",
+        methods=('get', 'patch', 'delete',),
+        url_path=r'(?P<username>\w+)',
         detail=False,
     )
     def admin_functions(self, request, username):
         user = get_object_or_404(User, username=username)
 
-        if request.method == "GET":
+        if request.method == 'GET':
             serializer = AdminUserSerializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        if request.method == "PATCH":
+        if request.method == 'PATCH':
             data = request.data.copy()
-            data["username"] = user.username
-            data["email"] = user.email
+            data['username'] = user.username
+            data['email'] = user.email
             serializer = AdminUserSerializer(user, data=data)
 
             if serializer.is_valid():
@@ -70,7 +70,7 @@ class AdminViewSet(viewsets.ModelViewSet):
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if request.method == "DELETE":
+        if request.method == 'DELETE':
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
