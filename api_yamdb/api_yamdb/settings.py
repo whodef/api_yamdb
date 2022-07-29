@@ -21,6 +21,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    "core",
     "users.apps.UsersConfig",
     "api.apps.ApiConfig",
     "categories.apps.CategoriesConfig",
@@ -149,3 +150,5 @@ USER = "user"
 # Django EmailBackend
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+SENDER = 'from@example.com'
