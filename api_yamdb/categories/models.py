@@ -35,7 +35,7 @@ class Title(models.Model):
     name = models.CharField(
         max_length=48, verbose_name='Название произведения'
     )
-    year = models.IntegerField(verbose_name='Год')
+    year = models.IntegerField(verbose_name='Год', db_index=True)
     description = models.TextField(
         verbose_name='Описание', blank=True, null=True
     )
@@ -53,7 +53,7 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-        ordering = ['name']
+        ordering = ['-year']
 
     def __str__(self):
         return self.name
