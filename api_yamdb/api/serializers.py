@@ -23,11 +23,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             'email',
             'username',
         )
-        validators = [
+        validators = (
             UniqueTogetherValidator(
-                queryset=User.objects.all(), fields=('username', 'email')
-            )
-        ]
+                queryset=User.objects.all(), fields=('username', 'email',)
+            ),
+        )
 
     @staticmethod
     def validate_username(value):
@@ -121,11 +121,11 @@ class AdminUserSerializer(serializers.ModelSerializer):
             'bio',
             'role',
         )
-        validators = [
+        validators = (
             UniqueTogetherValidator(
-                queryset=User.objects.all(), fields=['username', 'email']
-            )
-        ]
+                queryset=User.objects.all(), fields=('username', 'email',)
+            ),
+        )
         filter_backends = (filters.SearchFilter,)
         search_fields = ('username',)
 
@@ -206,21 +206,21 @@ class CommentSerializer(serializers.ModelSerializer):
             'id',
             'text',
             'author',
-            'pub_date'
+            'pub_date',
         )
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('name', 'slug')
+        fields = ('name', 'slug',)
         lookup_field = 'slug'
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = ('name', 'slug')
+        fields = ('name', 'slug',)
         lookup_field = 'slug'
 
 

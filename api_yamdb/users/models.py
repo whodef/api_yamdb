@@ -24,7 +24,7 @@ class User(AbstractUser):
     )
     confirmation_code = models.CharField(max_length=32, blank=True)
 
-    admin_methods = ('POST', 'PUT', 'PATCH', 'DELETE')
+    admin_methods = ('POST', 'PUT', 'PATCH', 'DELETE',)
 
     @property
     def is_moderator(self):
