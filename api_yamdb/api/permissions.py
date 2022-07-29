@@ -1,5 +1,7 @@
 from rest_framework import permissions
 
+from users.models import User
+
 
 class OnlyAdminAndSuperuser(permissions.BasePermission):
     """Определяет права на изменения только для Суперпользователя
@@ -7,7 +9,7 @@ class OnlyAdminAndSuperuser(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user.is_superuser or request.user.role == 'admin'
+        return request.user.is_superuser or request.user.is_admin
 
 
 class IsAdminOrReadOnly(permissions.BasePermission):
@@ -16,10 +18,11 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return (request.method in permissions.SAFE_METHODS) or (
-            request.user
+        return (
+            request.method in permissions.SAFE_METHODS
+            or request.user
             and request.user.is_authenticated
-            and request.user.role == 'admin'
+            and request.user.is_admin
         )
 
 
@@ -48,18 +51,8 @@ class IsAdminSuperuserOrReadOnly(permissions.BasePermission):
     только для Суперпользователя или Админа.
     """
 
-    admin_methods = (
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-    )
-
     def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        if not request.user.is_anonymous:
-            return request.method in self.admin_methods and (
-                request.user.is_superuser or request.user.is_admin
-            )
-        return False
+        return request.method in permissions.SAFE_METHODS or (
+                not request.user.is_anonymous
+                and request.method in User.admin_methods
+                and (request.user.is_superuser or request.user.is_admin))
