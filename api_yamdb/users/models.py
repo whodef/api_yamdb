@@ -32,7 +32,7 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return (self.role == ADMIN or self.is_staff) and self.is_authenticated
+        return self.role == ADMIN or self.is_staff
 
     def __str__(self):
         return self.username
