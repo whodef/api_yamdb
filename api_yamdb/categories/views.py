@@ -23,6 +23,13 @@ class CategoryGenreViewSet(viewsets.ModelViewSet):
         except ObjectDoesNotExist:
             raise exceptions.MethodNotAllowed(method='GET')
 
+    def get_permissions(self):
+        if self.request.user.is_anonymous:
+            return (ReadOnly(),)
+        if self.request.method == 'POST':
+            return (OnlyAdminAndSuperuser(),)
+        return super().get_permissions()
+
 
 class CategoryViewSet(CategoryGenreViewSet):
     queryset = Category.objects.all()
@@ -32,12 +39,7 @@ class CategoryViewSet(CategoryGenreViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
-    def get_permissions(self):
-        if self.request.user.is_anonymous:
-            return (ReadOnly(),)
-        if self.request.method == 'POST':
-            return (OnlyAdminAndSuperuser(),)
-        return super().get_permissions()
+    
 
 
 class GenreViewSet(CategoryGenreViewSet):
@@ -47,13 +49,6 @@ class GenreViewSet(CategoryGenreViewSet):
     permission_classes = (IsAdminSuperuserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-
-    def get_permissions(self):
-        if self.request.user.is_anonymous:
-            return (ReadOnly(),)
-        if self.request.method == 'POST':
-            return (OnlyAdminAndSuperuser(),)
-        return super().get_permissions()
 
 
 class TitleViewSet(viewsets.ModelViewSet):
