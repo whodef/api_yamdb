@@ -3,7 +3,7 @@ from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import exceptions, filters, viewsets
 
-from api.permissions import IsAdminSuperuserOrReadOnly
+from api.permissions import IsAdminSuperuserOrReadOnly, OnlyAdminAndSuperuser, ReadOnly
 from categories.models import Category, Genre, Title
 from api.filters import TitleFilter
 from api.serializers import (
@@ -11,7 +11,6 @@ from api.serializers import (
     GenreSerializer,
     TitleSerializer,
 )
-
 
 class CategoryGenreViewSet(viewsets.ModelViewSet):
     def get_object(self):
@@ -33,6 +32,13 @@ class CategoryViewSet(CategoryGenreViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
+    def get_permissions(self):
+        if self.request.user.is_anonymous:
+            return (ReadOnly(),)
+        if self.request.method == 'POST':
+            return (OnlyAdminAndSuperuser(),)
+        return super().get_permissions()
+
 
 class GenreViewSet(CategoryGenreViewSet):
     queryset = Genre.objects.all()
@@ -42,6 +48,13 @@ class GenreViewSet(CategoryGenreViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
+    def get_permissions(self):
+        if self.request.user.is_anonymous:
+            return (ReadOnly(),)
+        if self.request.method == 'POST':
+            return (OnlyAdminAndSuperuser(),)
+        return super().get_permissions()
+
 
 class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
@@ -49,6 +62,13 @@ class TitleViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_class = TitleFilter
     search_fields = ('name',)
+
+    def get_permissions(self):
+        if self.request.user.is_anonymous:
+            return (ReadOnly(),)
+        if self.request.method == 'POST':
+            return (OnlyAdminAndSuperuser(),)
+        return super().get_permissions()
 
     def get_queryset(self):
         return Title.objects.annotate(rating=Avg('reviews__score')).order_by(
